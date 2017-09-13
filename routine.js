@@ -79,3 +79,7 @@ routine.task('test #2', function (next) {
 });
 
 routine.runSerial();
+
+if (typeof module === 'object') {
+  module.exports = routine;
+}
