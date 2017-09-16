@@ -1,3 +1,5 @@
+var joinableCallback = require('joinable-callback');
+
 /**
  * @param {String} description 
  * @param {Function} fn 
@@ -11,18 +13,25 @@ RoutineTask.prototype.run = function (next) {
   return this._fn(next);
 };
 
-function routine(fn) {
-  var done = false;
-
-  return function (req, res, next) {
-    if (done) {
+function routine(req, res, next) {
+  if (routine.started) {
+    if (routine.completed) {
       next();
     } else {
-      fn(req, res, next);
+      if (routine.onCompleted == null) {
+        routine.onCompleted = joinableCallback(next);
+      } else {
+        routine.onCompleted.join(next);
+      }
     }
+  } else {
+    throw new Error('Routine not yet started.');
   }
 };
 
+routine.onCompleted = null;
+routine.started = false;
+routine.completed = false;
 routine._tasks = [];
 
 /**
@@ -34,23 +43,38 @@ routine.task = function (description, fn) {
   this._tasks.push(new RoutineTask(description, fn));
 };
 
-routine.runSerial = function () {
+routine.run = function () {
+  routine.started = true;
+
+  function nextTask(currentIndex) {
+    if (currentIndex + 1 < routine._tasks.length) {
+      runTask(currentIndex + 1);
+    } else {
+      routine.completed = true;
+      if (routine.onCompleted != null) {
+        routine.onCompleted();
+      }
+
+      console.log('All tasks completed.');
+    }
+  }
+
   function runTask(index) {
     var task = routine._tasks[index];
-    console.log('*** Running task `' + task.description + '`...');
+    console.log('*** ' + task.description);
 
+    // has the 'next' function been called? (if not, check if it is a Promise)
     var nextCalled = false;
     var taskResult = task.run(function next() {
       nextCalled = true;
-      if (index + 1 < routine._tasks.length) {
-        runTask(index + 1);
-      }
+      nextTask(index);
     });
 
     if (!nextCalled) {
+      // thenables
       if (taskResult != null && typeof taskResult.then === 'function') {
         taskResult.then(function () {
-          runTask(index + 1);
+          nextTask(index);
         });
       }
     }
@@ -58,27 +82,14 @@ routine.runSerial = function () {
 
   if (routine._tasks.length != 0) {
     runTask(0);
+  } else {
+    if (routine.onCompleted != null) {
+      routine.onCompleted();
+    }
+
+    console.log('No tasks to run.');
   }
 };
-
-// test
-routine.task('test #1', function () {
-  console.log('I am test #1');
-  
-  return new Promise((resolve, reject) => {
-    setTimeout(function () {
-      resolve();
-    }, 1000);
-
-  });
-});
-
-routine.task('test #2', function (next) {
-  console.log('I am test #2');
-  next();
-});
-
-routine.runSerial();
 
 if (typeof module === 'object') {
   module.exports = routine;

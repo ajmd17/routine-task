@@ -1,0 +1,30 @@
+{
+  "name": "routine",
+  "version": "0.0.1",
+  "description": "Create tasks that run on startup of your express server",
+  "main": "routine.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ajmd17/routine-task.git"
+  },
+  "keywords": [
+    "task",
+    "startup",
+    "express",
+    "middleware",
+    "tasks"
+  ],
+  "author": "Andrew MacDonald <andrewmacdonald971@gmail.com> (http://bidsquid.ca)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ajmd17/routine-task/issues"
+  },
+  "homepage": "https://github.com/ajmd17/routine-task#readme",
+  "dependencies": {
+    "express": "^4.15.4",
+    "joinable-callback": "^1.0.1"
+  }
+}
