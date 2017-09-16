@@ -1,5 +1,5 @@
 {
-  "name": "routine",
+  "name": "routine-task",
   "version": "0.0.1",
   "description": "Create tasks that run on startup of your express server",
   "main": "routine.js",
