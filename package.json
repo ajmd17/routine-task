@@ -17,14 +17,13 @@
     "middleware",
     "tasks"
   ],
-  "author": "Andrew MacDonald <andrewmacdonald971@gmail.com> (http://bidsquid.ca)",
+  "author": "Andrew MacDonald <andrew@bidsquid.ca> (https://bidsquid.com)",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/ajmd17/routine-task/issues"
   },
   "homepage": "https://github.com/ajmd17/routine-task#readme",
   "dependencies": {
-    "express": "^4.15.4",
     "joinable-callback": "^1.0.1"
   }
 }
